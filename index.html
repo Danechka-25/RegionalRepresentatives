@@ -28,6 +28,7 @@
       color:var(--text);
     }
     body{min-height:100vh}
+
     .hero{
       background:linear-gradient(135deg,#0b7f73,#16b8a6);
       color:#fff;
@@ -81,7 +82,8 @@
       font-size:14px;
     }
     #searchInput{flex:1 1 320px}
-    #regionFilter{flex:0 0 190px}
+    #regionFilter{flex:0 0 220px}
+
     .container{
       max-width:1280px;
       margin:0 auto;
@@ -140,6 +142,7 @@
       color:var(--muted);
       font-size:14px;
       line-height:1.45;
+      min-height: 42px;
     }
     .tags{
       display:flex;
@@ -202,6 +205,7 @@
       color:var(--text);
       cursor:pointer;
     }
+
     .profile{
       display:grid;
       grid-template-columns:180px 1fr;
@@ -304,7 +308,7 @@
       </div>
 
       <div class="hero__controls">
-        <input id="searchInput" class="input" type="search" placeholder="Поиск по ФИО, региону, email..." />
+        <input id="searchInput" class="input" type="search" placeholder="Поиск по ФИО, телефону, email, региону..." />
         <select id="regionFilter" class="input">
           <option value="">Все регионы</option>
         </select>
@@ -318,7 +322,6 @@
         <h2>Представители</h2>
         <div id="resultCount" class="muted"></div>
       </div>
-
       <div id="cardsGrid" class="grid"></div>
     </section>
   </main>
@@ -339,8 +342,8 @@
     const representatives = [
       {
         id: "zimnikova",
-        fio: "Татьяна Зимникова",
-        fullName: "Зимникова Татьяна Владимировна",
+        fio: "Зимникова Татьяна Владимировна",
+        short: "Татьяна Зимникова",
         phone: "89298312382",
         email: "tatyana.zimnikova@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -350,8 +353,8 @@
       },
       {
         id: "logvinova",
-        fio: "Светлана Логвинова",
-        fullName: "Логвинова Светлана Юльевна",
+        fio: "Логвинова Светлана Юльевна",
+        short: "Светлана Логвинова",
         phone: "8-920-403-00-84",
         email: "svetlana.logvinova@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -361,8 +364,8 @@
       },
       {
         id: "sysoev",
-        fio: "Игорь Сысоев",
-        fullName: "Сысоев Игорь Вячеславович",
+        fio: "Сысоев Игорь Вячеславович",
+        short: "Игорь Сысоев",
         phone: "8-920-433-00-13",
         email: "igor.sysoev@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -372,8 +375,8 @@
       },
       {
         id: "karacharova",
-        fio: "Оксана Карачарова",
-        fullName: "Карачарова Оксана Владимировна",
+        fio: "Карачарова Оксана Владимировна",
+        short: "Оксана Карачарова",
         phone: "+79202531695",
         email: "oksana.karacharova@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -383,8 +386,8 @@
       },
       {
         id: "kolpaschikova",
-        fio: "Марина Колпащикова",
-        fullName: "Колпащикова Марина Анатольевна",
+        fio: "Колпащикова Марина Анатольевна",
+        short: "Марина Колпащикова",
         phone: "+79221634946",
         email: "marina.kolpaschikova@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -394,8 +397,8 @@
       },
       {
         id: "koptelin",
-        fio: "Илья Коптелин",
-        fullName: "Коптелин Илья Алексеевич",
+        fio: "Коптелин Илья Алексеевич",
+        short: "Илья Коптелин",
         phone: "+78123204004",
         email: "ilya.koptelin@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -405,19 +408,19 @@
       },
       {
         id: "krylova",
-        fio: "Ольга Крылова",
-        fullName: "Крылова Ольга Сергеевна",
+        fio: "Крылова Ольга Сергеевна",
+        short: "Ольга Крылова",
         phone: "+79219613163",
         email: "olga.krylova@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
         division: "Avitum",
-        regions: ["Поликлиники СПБ"],
+        regions: ["Поликлиники СПБ", "Поликлиники СПБ (север)"],
         avatar: "🌼"
       },
       {
         id: "masyagina",
-        fio: "Ульяна Масягина",
-        fullName: "Масягина Ульяна Алексеевна",
+        fio: "Масягина Ульяна Алексеевна",
+        short: "Ульяна Масягина",
         phone: "+78123205071",
         email: "ulyana.masyagina@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -427,8 +430,8 @@
       },
       {
         id: "makarevich",
-        fio: "Лидия Макаревич",
-        fullName: "Макаревич Лидия Александровна",
+        fio: "Макаревич Лидия Александровна",
+        short: "Лидия Макаревич",
         phone: "+79216371507",
         email: "lidia.makarevich@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -438,8 +441,8 @@
       },
       {
         id: "molchanova",
-        fio: "Елена Молчанова",
-        fullName: "Молчанова Елена Викторовна",
+        fio: "Молчанова Елена Викторовна",
+        short: "Елена Молчанова",
         phone: "+7 (812) 320-40-04",
         email: "elena.molchanova@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -449,9 +452,9 @@
       },
       {
         id: "stolyarov",
-        fio: "Антон Столяров",
-        fullName: "Столяров Антон Викторович",
-        phone: "",
+        fio: "Столяров Антон Викторович",
+        short: "Антон Столяров",
+        phone: "+7(921) 943-79-13",
         email: "anton.stolyarov@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
         division: "Avitum",
@@ -460,8 +463,8 @@
       },
       {
         id: "furaev",
-        fio: "Александр Фураев",
-        fullName: "Фураев Александр Сергеевич",
+        fio: "Фураев Александр Сергеевич",
+        short: "Александр Фураев",
         phone: "+74957771272117",
         email: "alexander.furaev@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -471,8 +474,8 @@
       },
       {
         id: "dedash",
-        fio: "Елена Дедаш",
-        fullName: "Дедаш Елена Владиленовна",
+        fio: "Дедаш Елена Владиленовна",
+        short: "Елена Дедаш",
         phone: "+783912192383",
         email: "elena.dedash@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -482,8 +485,8 @@
       },
       {
         id: "yufa",
-        fio: "Ирина Юфа",
-        fullName: "Юфа Ирина Вячеславовна",
+        fio: "Юфа Ирина Вячеславовна",
+        short: "Ирина Юфа",
         phone: "8(931)369-42-04",
         email: "irirna.yufa@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -493,8 +496,8 @@
       },
       {
         id: "sidorenko",
-        fio: "Олеся Сидоренко",
-        fullName: "Сидоренко Олеся Анатольевна",
+        fio: "Сидоренко Олеся Анатольевна",
+        short: "Олеся Сидоренко",
         phone: "89224803565",
         email: "olesya.sidorenko@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -504,8 +507,8 @@
       },
       {
         id: "vesnovskaya",
-        fio: "Оксана Весновская",
-        fullName: "Весновская Оксана Дмитриевна",
+        fio: "Весновская Оксана Дмитриевна",
+        short: "Оксана Весновская",
         phone: "89273751112",
         email: "oxana.vesnovskaya@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -515,8 +518,8 @@
       },
       {
         id: "gavrilov",
-        fio: "Артём Гаврилов",
-        fullName: "Гаврилов Артем Александрович",
+        fio: "Гаврилов Артем Александрович",
+        short: "Артём Гаврилов",
         phone: "89130701108",
         email: "artem.gavrilov@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -526,8 +529,8 @@
       },
       {
         id: "pichugin",
-        fio: "Игорь Пичугин",
-        fullName: "Пичугин Игорь Георгиевич",
+        fio: "Пичугин Игорь Георгиевич",
+        short: "Игорь Пичугин",
         phone: "89145448193",
         email: "igor.pichugin@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -537,8 +540,8 @@
       },
       {
         id: "petrenko",
-        fio: "Александр Петренко",
-        fullName: "Петренко Александр Александрович",
+        fio: "Петренко Александр Александрович",
+        short: "Александр Петренко",
         phone: "89642125852",
         email: "alexander.petrenko@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -548,8 +551,8 @@
       },
       {
         id: "klepikov",
-        fio: "Михаил Клепиков",
-        fullName: "Клепиков Михаил Константинович",
+        fio: "Клепиков Михаил Константинович",
+        short: "Михаил Клепиков",
         phone: "89641226229",
         email: "mikhail.klepikov@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -559,8 +562,8 @@
       },
       {
         id: "rubtsov",
-        fio: "Михаил Рубцов",
-        fullName: "Рубцов Михаил Андреевич",
+        fio: "Рубцов Михаил Андреевич",
+        short: "Михаил Рубцов",
         phone: "89246007701",
         email: "mikhail.rubtsov@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -570,8 +573,8 @@
       },
       {
         id: "tsoy",
-        fio: "Виктор Цой",
-        fullName: "Цой Виктор Вячеславович",
+        fio: "Цой Виктор Вячеславович",
+        short: "Виктор Цой",
         phone: "89841430090",
         email: "victor.tsoy@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -581,8 +584,8 @@
       },
       {
         id: "fatyanov",
-        fio: "Александр Фатьянов",
-        fullName: "Фатьянов Александр Васильевич",
+        fio: "Фатьянов Александр Васильевич",
+        short: "Александр Фатьянов",
         phone: "89841430090",
         email: "alexander.fatyanov@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -592,8 +595,8 @@
       },
       {
         id: "valeev",
-        fio: "Ринат Валеев",
-        fullName: "Валеев Ринат Салаватович",
+        fio: "Валеев Ринат Салаватович",
+        short: "Ринат Валеев",
         phone: "89373320062",
         email: "rinat.valeev@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -603,8 +606,8 @@
       },
       {
         id: "kolomeytsev",
-        fio: "Алексей Коломейцев",
-        fullName: "Коломейцев Алексей Павлович",
+        fio: "Коломейцев Алексей Павлович",
+        short: "Алексей Коломейцев",
         phone: "89287660016",
         email: "alexey.kolomeytsev@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -614,8 +617,8 @@
       },
       {
         id: "murzabaev",
-        fio: "Игорь Мурзабаев",
-        fullName: "Мурзабаев Игорь Сергеевич",
+        fio: "Мурзабаев Игорь Сергеевич",
+        short: "Игорь Мурзабаев",
         phone: "89230164577",
         email: "igor.murzabaev@bbraun.com",
         direction: "дезинфекция и средства для лечения ран",
@@ -635,21 +638,32 @@
     const closeModalBtn = document.getElementById("closeModalBtn");
     const closeModalBackdrop = document.getElementById("closeModal");
 
-    function normalize(str) {
-      return (str || "").toString().toLowerCase().trim();
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
     }
 
-    function telHref(phone) {
-      return (phone || "").replace(/[^\d+]/g, "");
+    function normalizeText(str) {
+      return String(str ?? "")
+        .toLowerCase()
+        .replaceAll("ё", "е")
+        .replace(/[^\p{L}\p{N}]+/gu, " ")
+        .trim();
     }
 
-    function placeholderAvatar() {
-      return "👤";
+    function phoneDigits(phone) {
+      return String(phone ?? "").replace(/\D/g, "");
     }
 
     function getAllRegions() {
       const set = new Set();
-      representatives.forEach(rep => rep.regions.forEach(r => set.add(r)));
+      representatives.forEach(rep => {
+        (rep.regions || []).forEach(r => set.add(r));
+      });
       return Array.from(set).sort((a, b) => a.localeCompare(b, "ru"));
     }
 
@@ -662,28 +676,133 @@
       });
     }
 
+    function matchesSearch(rep, q) {
+      if (!q) return true;
+
+      const textFields = [
+        rep.fio,
+        rep.short,
+        rep.phone,
+        phoneDigits(rep.phone),
+        rep.email,
+        rep.direction,
+        rep.division,
+        ...(rep.regions || [])
+      ];
+
+      const haystack = normalizeText(textFields.join(" "));
+      const normalizedQuery = normalizeText(q);
+      const queryDigits = q.replace(/\D/g, "");
+
+      if (queryDigits && phoneDigits(rep.phone).includes(queryDigits)) return true;
+      return haystack.includes(normalizedQuery);
+    }
+
     function filteredData() {
-      const q = normalize(searchInput.value);
+      const q = searchInput.value;
       const region = regionFilter.value;
 
       return representatives.filter(rep => {
-        const haystack = [
-          rep.fio,
-          rep.fullName,
-          rep.phone,
-          rep.email,
-          rep.direction,
-          rep.division,
-          ...rep.regions
-        ].join(" ").toLowerCase();
-
-        const matchesQuery = !q || haystack.includes(q);
-        const matchesRegion = !region || rep.regions.includes(region);
-
-        return matchesQuery && matchesRegion;
+        const regionOk = !region || (rep.regions || []).includes(region);
+        const searchOk = matchesSearch(rep, q);
+        return regionOk && searchOk;
       });
     }
 
     function createCard(rep) {
       const card = document.createElement("article");
-      card.className = "card
+      card.className = "card";
+
+      card.innerHTML = `
+        <div class="card__avatar">${rep.avatar || "👤"}</div>
+        <div class="card__body">
+          <h3 class="card__name">${escapeHtml(rep.short || rep.fio)}</h3>
+          <p class="card__meta">${escapeHtml((rep.regions || []).join(", "))}</p>
+          <div class="tags">
+            <span class="tag">${escapeHtml(rep.direction)}</span>
+            <span class="tag tag--soft">${escapeHtml(rep.division)}</span>
+          </div>
+        </div>
+      `;
+
+      card.addEventListener("click", () => openProfile(rep));
+      return card;
+    }
+
+    function renderCards() {
+      const data = filteredData();
+      grid.innerHTML = "";
+
+      if (!data.length) {
+        grid.innerHTML = `<div class="empty">Ничего не найдено</div>`;
+        resultCount.textContent = `Найдено: 0`;
+        return;
+      }
+
+      data.forEach(rep => grid.appendChild(createCard(rep)));
+      resultCount.textContent = `Найдено: ${data.length}`;
+    }
+
+    function openProfile(rep) {
+      const phoneLink = rep.phone
+        ? `<a class="link" href="tel:${escapeHtml(phoneDigits(rep.phone) ? rep.phone : rep.phone)}">${escapeHtml(rep.phone)}</a>`
+        : `Не указан`;
+
+      profileContent.innerHTML = `
+        <div class="profile">
+          <div class="profile__avatar">${rep.avatar || "👤"}</div>
+          <div>
+            <h2 class="profile__name">${escapeHtml(rep.fio)}</h2>
+            <p class="profile__subtitle">${escapeHtml(rep.short || "")}</p>
+
+            <ul class="profile__list">
+              <li class="profile__item">
+                <span class="profile__label">Телефон</span>
+                ${phoneLink}
+              </li>
+              <li class="profile__item">
+                <span class="profile__label">Email</span>
+                <a class="link" href="mailto:${escapeHtml(rep.email)}">${escapeHtml(rep.email)}</a>
+              </li>
+              <li class="profile__item">
+                <span class="profile__label">Направление</span>
+                ${escapeHtml(rep.direction)}
+              </li>
+              <li class="profile__item">
+                <span class="profile__label">Дивизион</span>
+                ${escapeHtml(rep.division)}
+              </li>
+              <li class="profile__item">
+                <span class="profile__label">Зоны ответственности</span>
+                ${(rep.regions || []).map(r => `<div>${escapeHtml(r)}</div>`).join("")}
+              </li>
+            </ul>
+          </div>
+        </div>
+      `;
+
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    searchInput.addEventListener("input", renderCards);
+    regionFilter.addEventListener("change", renderCards);
+    closeModalBtn.addEventListener("click", closeModal);
+    closeModalBackdrop.addEventListener("click", closeModal);
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
+
+    fillRegionFilter();
+    renderCards();
+  </script>
+</body>
+</html>
