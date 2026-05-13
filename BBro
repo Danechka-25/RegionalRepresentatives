@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#16b8a6" />
+  <title>Bebra Bros (BB) — Представители</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__inner">
+      <div>
+        <div class="brand">Bebra Bros (BB)</div>
+        <h1>Территориальные представители</h1>
+        <p>Быстрый доступ к контактам, направлениям, дивизионам и зонам ответственности</p>
+      </div>
+
+      <div class="hero__controls">
+        <input id="searchInput" class="input" type="search" placeholder="Поиск по ФИО, региону, email..." />
+        <select id="regionFilter" class="input">
+          <option value="">Все регионы</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="section">
+      <div class="section__head">
+        <h2>Представители</h2>
+        <div id="resultCount" class="muted"></div>
+      </div>
+
+      <div id="cardsGrid" class="grid"></div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal__backdrop" id="closeModal"></div>
+    <div class="modal__dialog">
+      <button class="modal__close" id="closeModalBtn" aria-label="Закрыть">×</button>
+      <div id="profileContent"></div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+:root {
+  --bg: #edf8f6;
+  --surface: #ffffff;
+  --surface-2: #f5fbfa;
+  --text: #103a39;
+  --muted: #5e7b79;
+  --primary: #16b8a6;
+  --primary-dark: #0b7f73;
+  --primary-light: #dcf7f3;
+  --border: #d2ebe7;
+  --shadow: 0 14px 34px rgba(8, 67, 62, 0.12);
+  --radius: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  min-height: 100vh;
+}
+
+.hero {
+  background: linear-gradient(135deg, #0b7f73, #16b8a6);
+  color: #fff;
+  padding: 24px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.hero__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.brand {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.1;
+}
+
+.hero p {
+  margin: 10px 0 0;
+  opacity: 0.95;
+}
+
+.hero__controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: min(100%, 560px);
+}
+
+.input {
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.97);
+  color: var(--text);
+  border-radius: 14px;
+  padding: 0 14px;
+  outline: none;
+  box-shadow: var(--shadow);
+  width: 100%;
+}
+
+#searchInput {
+  flex: 1 1 320px;
+}
+
+#regionFilter {
+  flex: 0 0 190px;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 22px 16px 40px;
+}
+
+.section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.section__head h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(8, 67, 62, 0.16);
+}
+
+.card__avatar {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  font-size: 72px;
+  background: linear-gradient(135deg, #dbfaf6, #effcfb);
+  border-bottom: 1px solid var(--border);
+}
+
+.card__body {
+  padding: 14px 14px 16px;
+}
+
+.card__name {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.card__meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.tag--soft {
+  background: var(--surface-2);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 30;
+}
+
+.modal.open {
+  display: block;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 24, 22, 0.58);
+  backdrop-filter: blur(4px);
+}
+
+.modal__dialog {
+  position: relative;
+  width: min(760px, calc(100% - 20px));
+  max-height: min(90vh, 920px);
+  overflow: auto;
+  margin: 18px auto;
+  background: var(--surface);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  padding: 20px;
+}
+
+.modal__close {
+  position: sticky;
+  top: 0;
+  margin-left: auto;
+  display: block;
+  border: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: #eff8f7;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.profile {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.profile__avatar {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  font-size: 84px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #dbfaf6, #effcfb);
+  border: 1px solid var(--border);
+}
+
+.profile__name {
+  margin: 0 0 8px;
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.profile__subtitle {
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+
+.profile__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.profile__item {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+
+.profile__label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.link {
+  color: var(--primary-dark);
+  text-decoration: none;
+  word-break: break-word;
+  font-weight: 600;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 28px 10px;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    padding: 18px 14px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .hero__controls {
+    width: 100%;
+  }
+
+  #searchInput,
+  #regionFilter {
+    flex: 1 1 100%;
+  }
+
+  .section__head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal__dialog {
+    width: calc(100% - 10px);
+    margin: 5px auto;
+    max-height: calc(100vh - 10px);
+    border-radius: 20px;
+    padding: 16px;
+  }
+
+  .profile {
+    grid-template-columns: 1fr;
+  }
+
+  .profile__avatar {
+    max-width: 220px;
+    margin: 0 auto;
+  }
+
+  .profile__name {
+    font-size: 24px;
+  }
+}
+const representatives = [
+  {
+    id: "zimnikova",
+    fio: "Татьяна Зимникова",
+    fullName: "Зимникова Татьяна Владимировна",
+    phone: "89298312382",
+    email: "tatyana.zimnikova@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["Краснодарский край", "Адыгея", "Ставропольский край", "Полуостров", "Кавказские республики"],
+    avatar: "🌴"
+  },
+  {
+    id: "logvinova",
+    fio: "Светлана Логвинова",
+    fullName: "Логвинова Светлана Юльевна",
+    phone: "8-920-403-00-84",
+    email: "svetlana.logvinova@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["Воронеж", "Липецк", "Белгород", "Смоленск"],
+    avatar: "🌿"
+  },
+  {
+    id: "sysoev",
+    fio: "Игорь Сысоев",
+    fullName: "Сысоев Игорь Вячеславович",
+    phone: "8-920-433-00-13",
+    email: "igor.sysoev@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["Воронеж", "Орел", "Курск", "Брянск", "Тамбов"],
+    avatar: "🧭"
+  },
+  {
+    id: "karacharova",
+    fio: "Оксана Карачарова",
+    fullName: "Карачарова Оксана Владимировна",
+    phone: "+79202531695",
+    email: "oksana.karacharova@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["Н. Новгород", "Самара", "Саратов", "Чебоксары", "Пенза", "Иваново"],
+    avatar: "🏙️"
+  },
+  {
+    id: "kolpaschikova",
+    fio: "Марина Колпащикова",
+    fullName: "Колпащикова Марина Анатольевна",
+    phone: "+79221634946",
+    email: "marina.kolpaschikova@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["ЕКБ", "Тюмень", "Челябинск", "Курган", "Пермь", "ХМАО"],
+    avatar: "🧭"
+  },
+  {
+    id: "koptelin",
+    fio: "Илья Коптелин",
+    fullName: "Коптелин Илья Алексеевич",
+    phone: "+78123204004",
+    email: "ilya.koptelin@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["Новосибирск", "Барнаул", "Республика Алтай", "Хакасия"],
+    avatar: "🧪"
+  },
+  {
+    id: "krylova",
+    fio: "Ольга Крылова",
+    fullName: "Крылова Ольга Сергеевна",
+    phone: "+79219613163",
+    email: "olga.krylova@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["Поликлинники СПБ"],
+    avatar: "🌼"
+  },
+  {
+    id: "masyagina",
+    fio: "Ульяна Масягина",
+    fullName: "Масягина Ульяна Алексеевна",
+    phone: "+78123205071",
+    email: "ulyana.masyagina@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["ЛПУ СПБ", "Петрозаводск (Карелия)"],
+    avatar: "🩺"
+  },
+  {
+    id: "makarevich",
+    fio: "Лидия Макаревич",
+    fullName: "Макаревич Лидия Александровна",
+    phone: "+79216371507",
+    email: "lidia.makarevich@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["Москва", "Московская область"],
+    avatar: "💼"
+  },
+  {
+    id: "molchanova",
+    fio: "Елена Молчанова",
+    fullName: "Молчанова Елена Викторовна",
+    phone: "+7 (812) 320-40-04",
+    email: "elena.molchanova@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["Поликлинники СПБ (ЮГ)"],
+    avatar: "✨"
+  },
+  {
+    id: "stolyarov",
+    fio: "Антон Столяров",
+    fullName: "Столяров Антон Викторович",
+    phone: "",
+    email: "anton.stolyarov@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["ЛПУ СПБ", "Архангельск", "Вологда", "Киров"],
+    avatar: "🛡️"
+  },
+  {
+    id: "furaev",
+    fio: "Александр Фураев",
+    fullName: "Фураев Александр Сергеевич",
+    phone: "+74957771272117",
+    email: "alexander.furaev@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["Москва", "Московская область"],
+    avatar: "📍"
+  },
+  {
+    id: "dedash",
+    fio: "Елена Дедаш",
+    fullName: "Дедаш Елена Владиленовна",
+    phone: "+783912192383",
+    email: "elena.dedash@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["Красноярск", "Красноярский край", "Норильск"],
+    avatar: "❄️"
+  },
+  {
+    id: "yufa",
+    fio: "Ирина Юфа",
+    fullName: "Юфа Ирина Вячеславовна",
+    phone: "8(931)369-42-04",
+    email: "irirna.yufa@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Avitum",
+    regions: ["СПб", "Лен.область"],
+    avatar: "🌊"
+  },
+  {
+    id: "sidorenko",
+    fio: "Олеся Сидоренко",
+    fullName: "Сидоренко Олеся Анатольевна",
+    phone: "89224803565",
+    email: "olesya.sidorenko@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Aesculap (AE)",
+    regions: ["Салехард", "Тюмень"],
+    avatar: "🌟"
+  },
+  {
+    id: "vesnovskaya",
+    fio: "Оксана Весновская",
+    fullName: "Весновская Оксана Дмитриевна",
+    phone: "89273751112",
+    email: "oxana.vesnovskaya@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Hospital Care (HC)",
+    regions: ["Саранск", "Пенза"],
+    avatar: "📘"
+  },
+  {
+    id: "gavrilov",
+    fio: "Артём Гаврилов",
+    fullName: "Гаврилов Артем Александрович",
+    phone: "89130701108",
+    email: "artem.gavrilov@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Hospital Care (HC)",
+    regions: ["Кемерово", "Новокузнецк"],
+    avatar: "🚩"
+  },
+  {
+    id: "pichugin",
+    fio: "Игорь Пичугин",
+    fullName: "Пичугин Игорь Георгиевич",
+    phone: "89145448193",
+    email: "igor.pichugin@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Aesculap (AE)",
+    regions: ["Хабаровск", "Благовещенск", "Комсомольск на Амуре"],
+    avatar: "🛰️"
+  },
+  {
+    id: "petrenko",
+    fio: "Александр Петренко",
+    fullName: "Петренко Александр Александрович",
+    phone: "89642125852",
+    email: "alexander.petrenko@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Hospital Care (HC)",
+    regions: ["Иркутск", "Улан-Удэ"],
+    avatar: "🏔️"
+  },
+  {
+    id: "klepikov",
+    fio: "Михаил Клепиков",
+    fullName: "Клепиков Михаил Константинович",
+    phone: "89641226229",
+    email: "mikhail.klepikov@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Aesculap (AE)",
+    regions: ["Иркутск", "Улан-Удэ"],
+    avatar: "🧬"
+  },
+  {
+    id: "rubtsov",
+    fio: "Михаил Рубцов",
+    fullName: "Рубцов Михаил Андреевич",
+    phone: "89246007701",
+    email: "mikhail.rubtsov@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Hospital Care (HC)",
+    regions: ["Иркутск", "Улан-Удэ"],
+    avatar: "🩹"
+  },
+  {
+    id: "tsoy",
+    fio: "Виктор Цой",
+    fullName: "Цой Виктор Вячеславович",
+    phone: "89841430090",
+    email: "victor.tsoy@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Aesculap (AE)",
+    regions: ["Владивосток", "Сахалин"],
+    avatar: "🌅"
+  },
+  {
+    id: "fatyanov",
+    fio: "Александр Фатьянов",
+    fullName: "Фатьянов Александр Васильевич",
+    phone: "89841430090",
+    email: "alexander.fatyanov@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Aesculap (AE)",
+    regions: ["Якутск", "Новосибирск"],
+    avatar: "🧊"
+  },
+  {
+    id: "valeev",
+    fio: "Ринат Валеев",
+    fullName: "Валеев Ринат Салаватович",
+    phone: "89373320062",
+    email: "rinat.valeev@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Aesculap (AE)",
+    regions: ["Уфа", "Оренбург", "Башкирия"],
+    avatar: "🟩"
+  },
+  {
+    id: "kolomeytsev",
+    fio: "Алексей Коломейцев",
+    fullName: "Коломейцев Алексей Павлович",
+    phone: "89287660016",
+    email: "alexey.kolomeytsev@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Aesculap (AE) + Hospital Care (HC)",
+    regions: ["Ростов-на-Дону"],
+    avatar: "⚙️"
+  },
+  {
+    id: "murzabaev",
+    fio: "Игорь Мурзабаев",
+    fullName: "Мурзабаев Игорь Сергеевич",
+    phone: "89230164577",
+    email: "igor.murzabaev@bbraun.com",
+    direction: "дезинфекция и средства для лечения ран",
+    division: "Aesculap (AE)",
+    regions: ["Томск"],
+    avatar: "🚀"
+  }
+];
+const grid = document.getElementById("cardsGrid");
+const searchInput = document.getElementById("searchInput");
+const regionFilter = document.getElementById("regionFilter");
+const resultCount = document.getElementById("resultCount");
+
+const modal = document.getElementById("modal");
+const profileContent = document.getElementById("profileContent");
+const closeModalBtn = document.getElementById("closeModalBtn");
+const closeModalBackdrop = document.getElementById("closeModal");
+
+function normalize(str) {
+  return (str || "").toString().toLowerCase().trim();
+}
+
+function telHref(phone) {
+  return (phone || "").replace(/[^\d+]/g, "");
+}
+
+function placeholderAvatar() {
+  return "👤";
+}
+
+function getAllRegions() {
+  const set = new Set();
+  representatives.forEach(rep => rep.regions.forEach(r => set.add(r)));
+  return Array.from(set).sort((a, b) => a.localeCompare(b, "ru"));
+}
+
+function fillRegionFilter() {
+  getAllRegions().forEach(region => {
+    const option = document.createElement("option");
+    option.value = region;
+    option.textContent = region;
+    regionFilter.appendChild(option);
+  });
+}
+
+function filteredData() {
+  const q = normalize(searchInput.value);
+  const region = regionFilter.value;
+
+  return representatives.filter(rep => {
+    const haystack = [
+      rep.fio,
+      rep.fullName,
+      rep.phone,
+      rep.email,
+      rep.direction,
+      rep.division,
+      ...rep.regions
+    ].join(" ").toLowerCase();
+
+    const matchesQuery = !q || haystack.includes(q);
+    const matchesRegion = !region || rep.regions.includes(region);
+
+    return matchesQuery && matchesRegion;
+  });
+}
+
+function createCard(rep) {
+  const card = document.createElement("article");
+  card.className = "card";
+
+  card.innerHTML = `
+    <div class="card__avatar">${rep.avatar || placeholderAvatar()}</div>
+    <div class="card__body">
+      <h3 class="card__name">${rep.fio}</h3>
+      <p class="card__meta">${rep.regions.join(", ")}</p>
+      <div class="tags">
+        <span class="tag">${rep.direction}</span>
+        <span class="tag tag--soft">${rep.division}</span>
+      </div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => openProfile(rep));
+  return card;
+}
+
+function renderCards() {
+  const data = filteredData();
+  grid.innerHTML = "";
+  data.forEach(rep => grid.appendChild(createCard(rep)));
+  resultCount.textContent = `Найдено: ${data.length}`;
+}
+
+function openProfile(rep) {
+  const phoneHtml = rep.phone
+    ? `<a class="link" href="tel:${telHref(rep.phone)}">${rep.phone}</a>`
+    : `Не указан`;
+
+  profileContent.innerHTML = `
+    <div class="profile">
+      <div class="profile__avatar">${rep.avatar || placeholderAvatar()}</div>
+      <div>
+        <h2 class="profile__name">${rep.fullName}</h2>
+        <p class="profile__subtitle">${rep.fio}</p>
+
+        <ul class="profile__list">
+          <li class="profile__item">
+            <span class="profile__label">Телефон</span>
+            ${phoneHtml}
+          </li>
+          <li class="profile__item">
+            <span class="profile__label">Email</span>
+            <a class="link" href="mailto:${rep.email}">${rep.email}</a>
+          </li>
+          <li class="profile__item">
+            <span class="profile__label">Направление</span>
+            ${rep.direction}
+          </li>
+          <li class="profile__item">
+            <span class="profile__label">Дивизион</span>
+            ${rep.division}
+          </li>
+          <li class="profile__item">
+            <span class="profile__label">Зоны ответственности</span>
+            ${rep.regions.map(r => `<div>${r}</div>`).join("")}
+          </li>
+        </ul>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+searchInput.addEventListener("input", renderCards);
+regionFilter.addEventListener("change", renderCards);
+closeModalBtn.addEventListener("click", closeModal);
+closeModalBackdrop.addEventListener("click", closeModal);
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModal();
+});
+
+fillRegionFilter();
+renderCards();
