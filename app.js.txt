@@ -1,0 +1,146 @@
+const grid = document.getElementById("cardsGrid");
+const searchInput = document.getElementById("searchInput");
+const regionFilter = document.getElementById("regionFilter");
+const resultCount = document.getElementById("resultCount");
+
+const modal = document.getElementById("modal");
+const profileContent = document.getElementById("profileContent");
+const closeModalBtn = document.getElementById("closeModalBtn");
+const closeModalBackdrop = document.getElementById("closeModal");
+
+function normalize(str) {
+  return (str || "").toString().toLowerCase().trim();
+}
+
+function telHref(phone) {
+  return (phone || "").replace(/[^\d+]/g, "");
+}
+
+function placeholderAvatar() {
+  return "👤";
+}
+
+function getAllRegions() {
+  const set = new Set();
+  representatives.forEach(rep => rep.regions.forEach(r => set.add(r)));
+  return Array.from(set).sort((a, b) => a.localeCompare(b, "ru"));
+}
+
+function fillRegionFilter() {
+  getAllRegions().forEach(region => {
+    const option = document.createElement("option");
+    option.value = region;
+    option.textContent = region;
+    regionFilter.appendChild(option);
+  });
+}
+
+function filteredData() {
+  const q = normalize(searchInput.value);
+  const region = regionFilter.value;
+
+  return representatives.filter(rep => {
+    const haystack = [
+      rep.fio,
+      rep.fullName,
+      rep.phone,
+      rep.email,
+      rep.direction,
+      rep.division,
+      ...rep.regions
+    ].join(" ").toLowerCase();
+
+    const matchesQuery = !q || haystack.includes(q);
+    const matchesRegion = !region || rep.regions.includes(region);
+
+    return matchesQuery && matchesRegion;
+  });
+}
+
+function createCard(rep) {
+  const card = document.createElement("article");
+  card.className = "card";
+
+  card.innerHTML = `
+    <div class="card__avatar">${rep.avatar || placeholderAvatar()}</div>
+    <div class="card__body">
+      <h3 class="card__name">${rep.fio}</h3>
+      <p class="card__meta">${rep.regions.join(", ")}</p>
+      <div class="tags">
+        <span class="tag">${rep.direction}</span>
+        <span class="tag tag--soft">${rep.division}</span>
+      </div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => openProfile(rep));
+  return card;
+}
+
+function renderCards() {
+  const data = filteredData();
+  grid.innerHTML = "";
+  data.forEach(rep => grid.appendChild(createCard(rep)));
+  resultCount.textContent = `Найдено: ${data.length}`;
+}
+
+function openProfile(rep) {
+  const phoneHtml = rep.phone
+    ? `<a class="link" href="tel:${telHref(rep.phone)}">${rep.phone}</a>`
+    : `Не указан`;
+
+  profileContent.innerHTML = `
+    <div class="profile">
+      <div class="profile__avatar">${rep.avatar || placeholderAvatar()}</div>
+      <div>
+        <h2 class="profile__name">${rep.fullName}</h2>
+        <p class="profile__subtitle">${rep.fio}</p>
+
+        <ul class="profile__list">
+          <li class="profile__item">
+            <span class="profile__label">Телефон</span>
+            ${phoneHtml}
+          </li>
+          <li class="profile__item">
+            <span class="profile__label">Email</span>
+            <a class="link" href="mailto:${rep.email}">${rep.email}</a>
+          </li>
+          <li class="profile__item">
+            <span class="profile__label">Направление</span>
+            ${rep.direction}
+          </li>
+          <li class="profile__item">
+            <span class="profile__label">Дивизион</span>
+            ${rep.division}
+          </li>
+          <li class="profile__item">
+            <span class="profile__label">Зоны ответственности</span>
+            ${rep.regions.map(r => `<div>${r}</div>`).join("")}
+          </li>
+        </ul>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+searchInput.addEventListener("input", renderCards);
+regionFilter.addEventListener("change", renderCards);
+closeModalBtn.addEventListener("click", closeModal);
+closeModalBackdrop.addEventListener("click", closeModal);
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModal();
+});
+
+fillRegionFilter();
+renderCards();
